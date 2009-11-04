@@ -1,0 +1,43 @@
+    slowphp --- A simple php module to log slow queries.
+
+1.
+    cp slowphp.so to your php extensions directory;
+2.
+    add this to your php.ini:
+
+<code>
+extension=slowphp.so
+[slowphp]
+slowphp.long_query_time=2
+slowphp.long_query_log = "/tmp/php_long_query.log"
+slowphp.long_query_log_probability=100
+slowphp.long_query_lock_file="/tmp/php_long_query.lock"
+</code>
+
+
+3:
+    enjoy the simple awesome module!
+
+
+
+Help:
+    
+    1.I want to view execute-time of each file.What should I do?
+
+        As you specificed in the php.ini,For example,you wrote this:
+            <code>
+            slowphp.long_query_lock_file="/tmp/php_long_query.lock"
+            </code>
+        you just touch file /tmp/php_long_query.lock simply:
+        <code>
+        $touch /tmp/php_long_query.lock
+        </code>
+        Now,He will log execute-time for you. When you finished your
+        debugs,you need delete the file /tmp/php_long_query.lock
+
+    2.How should I specific a slowphp.long_query_log_probability?
+        
+        When you wrote 100,slowphp log the execute-time every 100 times (not
+        exactly,you see,we mean "probability".
+
+        For site much more busy, a huge number should be given.

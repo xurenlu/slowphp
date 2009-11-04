@@ -1,0 +1,38 @@
+001+ PHP Warning:  PHP Startup: Unable to load dynamic library 'modules/htest.so' - modules/htest.so: cannot open shared object file: No such file or directory in Unknown on line 0
+001- slowphp extension is available
+002+ 
+003+ Warning: PHP Startup: Unable to load dynamic library 'modules/htest.so' - modules/htest.so: cannot open shared object file: No such file or directory in Unknown on line 0
+004+ PHP Warning:  PHP Startup: Unable to load dynamic library 'modules/curl.so' - modules/curl.so: cannot open shared object file: No such file or directory in Unknown on line 0
+005+ 
+006+ Warning: PHP Startup: Unable to load dynamic library 'modules/curl.so' - modules/curl.so: cannot open shared object file: No such file or directory in Unknown on line 0
+007+ PHP Warning:  PHP Startup: Unable to load dynamic library 'modules/gd.so' - modules/gd.so: cannot open shared object file: No such file or directory in Unknown on line 0
+008+ 
+009+ Warning: PHP Startup: Unable to load dynamic library 'modules/gd.so' - modules/gd.so: cannot open shared object file: No such file or directory in Unknown on line 0
+010+ PHP Warning:  PHP Startup: Unable to load dynamic library 'modules/mcrypt.so' - modules/mcrypt.so: cannot open shared object file: No such file or directory in Unknown on line 0
+011+ 
+012+ Warning: PHP Startup: Unable to load dynamic library 'modules/mcrypt.so' - modules/mcrypt.so: cannot open shared object file: No such file or directory in Unknown on line 0
+013+ PHP Warning:  PHP Startup: Unable to load dynamic library 'modules/memcache.so' - modules/memcache.so: cannot open shared object file: No such file or directory in Unknown on line 0
+014+ 
+015+ Warning: PHP Startup: Unable to load dynamic library 'modules/memcache.so' - modules/memcache.so: cannot open shared object file: No such file or directory in Unknown on line 0
+016+ PHP Warning:  PHP Startup: Unable to load dynamic library 'modules/mysql.so' - modules/mysql.so: cannot open shared object file: No such file or directory in Unknown on line 0
+017+ 
+018+ Warning: PHP Startup: Unable to load dynamic library 'modules/mysql.so' - modules/mysql.so: cannot open shared object file: No such file or directory in Unknown on line 0
+019+ PHP Warning:  PHP Startup: Unable to load dynamic library 'modules/mysqli.so' - modules/mysqli.so: cannot open shared object file: No such file or directory in Unknown on line 0
+020+ 
+021+ Warning: PHP Startup: Unable to load dynamic library 'modules/mysqli.so' - modules/mysqli.so: cannot open shared object file: No such file or directory in Unknown on line 0
+022+ PHP Warning:  PHP Startup: Unable to load dynamic library 'modules/pdo.so' - modules/pdo.so: cannot open shared object file: No such file or directory in Unknown on line 0
+023+ 
+024+ Warning: PHP Startup: Unable to load dynamic library 'modules/pdo.so' - modules/pdo.so: cannot open shared object file: No such file or directory in Unknown on line 0
+025+ PHP Warning:  PHP Startup: Unable to load dynamic library 'modules/pdo_mysql.so' - modules/pdo_mysql.so: cannot open shared object file: No such file or directory in Unknown on line 0
+026+ 
+027+ Warning: PHP Startup: Unable to load dynamic library 'modules/pdo_mysql.so' - modules/pdo_mysql.so: cannot open shared object file: No such file or directory in Unknown on line 0
+028+ PHP Warning:  PHP Startup: Unable to load dynamic library 'modules/syck.so' - modules/syck.so: cannot open shared object file: No such file or directory in Unknown on line 0
+029+ 
+030+ Warning: PHP Startup: Unable to load dynamic library 'modules/syck.so' - modules/syck.so: cannot open shared object file: No such file or directory in Unknown on line 0
+031+ PHP Warning:  PHP Startup: Unable to load dynamic library 'modules/tidy.so' - modules/tidy.so: cannot open shared object file: No such file or directory in Unknown on line 0
+032+ 
+033+ Warning: PHP Startup: Unable to load dynamic library 'modules/tidy.so' - modules/tidy.so: cannot open shared object file: No such file or directory in Unknown on line 0
+034+ PHP Warning:  Module 'slowphp' already loaded in Unknown on line 0
+035+ 
+036+ Warning: Module 'slowphp' already loaded in Unknown on line 0
+037+ slowphp extension is available

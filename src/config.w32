@@ -1,0 +1,13 @@
+// $Id$
+// vim:ft=javascript
+
+// If your extension references something external, use ARG_WITH
+// ARG_WITH("slowphp", "for slowphp support", "no");
+
+// Otherwise, use ARG_ENABLE
+// ARG_ENABLE("slowphp", "enable slowphp support", "no");
+
+if (PHP_SLOWPHP != "no") {
+	EXTENSION("slowphp", "slowphp.c");
+}
+
