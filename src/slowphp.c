@@ -7,7 +7,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include "php.h"
 #include "php_globals.h"
 #include "ext/standard/info.h"
