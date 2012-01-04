@@ -8,9 +8,13 @@
 <code>
 extension=slowphp.so
 [slowphp]
+#执行时间超过多少了就开启记录;
 slowphp.long_query_time=2
+#日志写到什么地方;
 slowphp.long_query_log = "/tmp/php_long_query.log"
+#多大的概率,指的是多少分之一(写100就是百分之一)
 slowphp.long_query_log_probability=100
+#当下面这个文件存在时,不管任何条件,一定会开启记录;
 slowphp.long_query_lock_file="/tmp/php_long_query.lock"
 </code>
 

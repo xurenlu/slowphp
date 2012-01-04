@@ -21,9 +21,9 @@
 
 
 /**
-copy from xdebug 's source file 
+copy from slowphp 's source file 
 */
-double xdebug_get_utime(void)
+double slowphp_get_utime(void)
 {
 #ifdef HAVE_GETTIMEOFDAY
     struct timeval tp; 
@@ -143,7 +143,7 @@ PHP_MSHUTDOWN_FUNCTION(slowphp)
  */
 PHP_RINIT_FUNCTION(slowphp)
 {
-	start_time=xdebug_get_utime();
+	start_time=slowphp_get_utime();
 	return SUCCESS;
 }
 /* }}} */
@@ -154,7 +154,7 @@ PHP_RINIT_FUNCTION(slowphp)
 PHP_RSHUTDOWN_FUNCTION(slowphp)
 {
 	char buf[4096];
-	end_time=xdebug_get_utime();
+	end_time=slowphp_get_utime();
 	double cost_time=end_time-start_time;
 	int log=0;//默认不记录
 	//如果满足四项条件中的任一项,就记录:
@@ -163,9 +163,11 @@ PHP_RSHUTDOWN_FUNCTION(slowphp)
 	//c:在0和long_query_probability之间产生的随机数刚好是1
 	//d:probability 设置的值小于等于1;
 	if(slowphp_globals.long_query_log_probability<=1){
+		//printf("open log because long_query_log_probability<=1");
 		log=1;
 	}
 	else if(cost_time > slowphp_globals.long_query_time){
+		//printf("open log because cost_time > long_query_time,cost_time:%f, long_query_time:%ld\n",cost_time,slowphp_globals.long_query_time);
 		log=1;
 	}
 	else {
@@ -177,12 +179,14 @@ PHP_RSHUTDOWN_FUNCTION(slowphp)
 		rand_should=(int)(RAND_MAX/slowphp_globals.long_query_log_probability);
 		if(rand_num<=rand_should)
 		{
+			//printf("open log because rand_num<=rand_should:rand_num:%d,rand_should:%d\n",rand_num,rand_should);
 			log=1;
 		}
 		else {
 			struct stat info;
 			int stat_result;
 		    if( (stat_result=stat(slowphp_globals.long_query_lock_file,&info))!=-1 ){
+				//printf("open log because exists file:long_query_lock_file:%s\n",slowphp_globals.long_query_lock_file);
 				log =1;
 			}
 		}
@@ -202,9 +206,16 @@ PHP_RSHUTDOWN_FUNCTION(slowphp)
     ){
 		char * script_filename=(zval ** )Z_STRVAL_PP(script_file_zval);
 		char * request_uri=(zval ** )Z_STRVAL_PP(request_uri_zval);
-		
 		sprintf(buf,"%f\t%f\t%s\t%s\n",start_time,cost_time,script_filename,request_uri);
-	} 
+	}
+	else if(
+                PG(http_globals)[TRACK_VARS_SERVER] &&
+                zend_hash_find(PG(http_globals)[TRACK_VARS_SERVER]->value.ht,  
+"SCRIPT_FILENAME", sizeof("SCRIPT_FILENAME"), (void **) &script_file_zval) == SUCCESS
+			){
+		char * script_filename=(zval ** )Z_STRVAL_PP(script_file_zval);
+		sprintf(buf,"%f\t%f\t%s\n",start_time,cost_time,script_filename);
+	}
 	else {
 		sprintf(buf,"%f\t%f\t[can't fetch SCRIPT_FILENAME]\n",start_time,cost_time);
 	}
