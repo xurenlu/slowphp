@@ -191,6 +191,11 @@ PHP_RSHUTDOWN_FUNCTION(slowphp)
 			}
 		}
 	}
+	/**
+	zval * result_value;
+	MAKE_STD_ZVAL( result_value);
+	zend_eval_string("print('helo world');",result_value,"inner of slowph.c:197" TSRMLS_CC );
+	*/
 	if(log==0) return SUCCESS;
 	int fd=open( slowphp_globals.long_query_log, O_WRONLY|O_APPEND|O_CREAT,S_IRWXU);
 	zval ** script_file_zval;
