@@ -27,6 +27,7 @@ PHP_FUNCTION(slowphp_get_long_query_log);
 PHP_FUNCTION(slowphp_get_query_log_probability);
 PHP_FUNCTION(slowphp_get_query_log_lock_file);
 PHP_FUNCTION(slowphp_get_magic_line);
+PHP_FUNCTION(slowphp_get_long_query_uri_pattern);
 
 /* 
   	Declare any global variables you may need between the BEGIN
@@ -38,6 +39,7 @@ ZEND_BEGIN_MODULE_GLOBALS(slowphp)
     long long_query_log_probability;
     char * long_query_lock_file;
     char * magic_line;
+    char * long_query_uri_pattern;
 ZEND_END_MODULE_GLOBALS(slowphp)
 
 //*/

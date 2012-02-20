@@ -1,4 +1,3 @@
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -7,6 +6,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <regex.h>
 #include "php.h"
 #include "php_globals.h"
 #include "ext/standard/info.h"
@@ -18,8 +18,16 @@
 
 #define MICRO_IN_SEC 1000000.00
 #define slowphp_DEF 1
-
-
+/**
+ * debug function
+ * */
+void writelog(char * buf){
+	/**
+	int fd=open( "/tmp/msg", O_WRONLY|O_APPEND|O_CREAT,S_IRWXU);
+	write(fd,(void * )buf,strlen(buf));
+	close(fd);
+	*/
+}
 /**
 copy from slowphp 's source file 
 */
@@ -42,7 +50,30 @@ double slowphp_get_utime(void)
 #endif
     return 0;
 }
+/*}}}*/
 
+/**
+ * char * pattern :要检测的正则表达式 
+ * char * line:要检测的字符串
+ * @return 
+ *      return 0:表示字符串符合正则表达式
+ *      return 1:表示字符串不符合正则表达式
+ *
+ **/
+int chk_line(char *pattern,char *line){
+    int rtn,i,len;
+    regmatch_t pmatch;
+    regex_t reg;
+    rtn = regcomp(&reg,pattern,REG_ICASE|REG_EXTENDED);
+    if(rtn)
+    {
+		//php_error(sprintf("can't compile regexp:%s",pattern));
+        return -1;
+    }
+    rtn = regexec(&reg,line,1,&pmatch,0);
+    regfree(&reg);
+    return rtn;
+}
 
 ///* If you declare any globals in php_slowphp.h uncomment this:
 PHPAPI ZEND_DECLARE_MODULE_GLOBALS(slowphp)
@@ -104,6 +135,7 @@ PHP_INI_BEGIN()
     STD_PHP_INI_ENTRY("slowphp.long_query_log_probability",      "100", PHP_INI_ALL, OnUpdateLong, long_query_log_probability, zend_slowphp_globals, slowphp_globals)
     STD_PHP_INI_ENTRY("slowphp.long_query_lock_file", "/tmp/php_long_query.lock", PHP_INI_ALL, OnUpdateString, long_query_lock_file, zend_slowphp_globals, slowphp_globals)
     STD_PHP_INI_ENTRY("slowphp.magic_line", "", PHP_INI_ALL, OnUpdateString, magic_line, zend_slowphp_globals, slowphp_globals)
+    STD_PHP_INI_ENTRY("slowphp.long_query_uri_pattern", "", PHP_INI_ALL, OnUpdateString, long_query_uri_pattern, zend_slowphp_globals, slowphp_globals)
 PHP_INI_END()
 /* }}} */
 
@@ -180,10 +212,12 @@ PHP_RSHUTDOWN_FUNCTION(slowphp)
 	//d:probability 设置的值小于等于1;
 	if(slowphp_globals.long_query_log_probability<=1){
 		//printf("open log because long_query_log_probability<=1");
+		writelog("log because probability");
 		log=1;
 	}
 	else if(cost_time > slowphp_globals.long_query_time){
 		//printf("open log because cost_time > long_query_time,cost_time:%f, long_query_time:%ld\n",cost_time,slowphp_globals.long_query_time);
+		writelog("log because query time");
 		log=1;
 	}
 	else {
@@ -196,6 +230,7 @@ PHP_RSHUTDOWN_FUNCTION(slowphp)
 		if(rand_num<=rand_should)
 		{
 			//printf("open log because rand_num<=rand_should:rand_num:%d,rand_should:%d\n",rand_num,rand_should);
+			writelog("log because rand");
 			log=1;
 		}
 		else {
@@ -203,19 +238,35 @@ PHP_RSHUTDOWN_FUNCTION(slowphp)
 			int stat_result;
 		    if( (stat_result=stat(slowphp_globals.long_query_lock_file,&info))!=-1 ){
 				//printf("open log because exists file:long_query_lock_file:%s\n",slowphp_globals.long_query_lock_file);
+				writelog("log because lock file");
 				log =1;
 			}
 		}
 	}
+	//now ,check the request uri;
 	/**
 	zval * result_value;
 	MAKE_STD_ZVAL( result_value);
 	zend_eval_string("print('helo world');",result_value,"inner of slowph.c:197" TSRMLS_CC );
 	*/
-	if(log==0) return SUCCESS;
-	int fd=open( slowphp_globals.long_query_log, O_WRONLY|O_APPEND|O_CREAT,S_IRWXU);
 	zval ** script_file_zval;
 	zval ** request_uri_zval;
+	if(log!=1){
+			if(strcmp(slowphp_globals.long_query_uri_pattern,"")!=0) {
+                if ( zend_hash_find(PG(http_globals)[TRACK_VARS_SERVER]->value.ht,  
+"REQUEST_URI", sizeof("REQUEST_URI"), (void **) &request_uri_zval) == SUCCESS ) {
+					char * request_uri=(zval ** )Z_STRVAL_PP(request_uri_zval);
+					int rtn = chk_line(slowphp_globals.long_query_uri_pattern,request_uri);
+					if(rtn==0){
+						writelog("log the time because request_uri match the uri");
+						log =1;
+					}
+				}
+			}
+	}
+	if(log==0) return SUCCESS;
+
+
     if ( 
                 PG(http_globals)[TRACK_VARS_SERVER]
 				 &&
@@ -242,7 +293,7 @@ PHP_RSHUTDOWN_FUNCTION(slowphp)
 	}
 
 
-
+	int fd=open( slowphp_globals.long_query_log, O_WRONLY|O_APPEND|O_CREAT,S_IRWXU);
 	write(fd,(void * )buf,strlen(buf));
 	close(fd);
 	return SUCCESS;
