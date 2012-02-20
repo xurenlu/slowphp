@@ -62,6 +62,7 @@ zend_function_entry slowphp_functions[] = {
 	PHP_FE(slowphp_get_long_query_log,	NULL)
 	PHP_FE(slowphp_get_query_log_probability,	NULL)
 	PHP_FE(slowphp_get_query_log_lock_file,	NULL)
+	PHP_FE(slowphp_get_magic_line,	NULL)
 	{NULL, NULL, NULL}
 };
 /* }}} */
@@ -102,6 +103,7 @@ PHP_INI_BEGIN()
     STD_PHP_INI_ENTRY("slowphp.long_query_log", "/var/log/php_long_query.log", PHP_INI_ALL, OnUpdateString, long_query_log, zend_slowphp_globals, slowphp_globals)
     STD_PHP_INI_ENTRY("slowphp.long_query_log_probability",      "100", PHP_INI_ALL, OnUpdateLong, long_query_log_probability, zend_slowphp_globals, slowphp_globals)
     STD_PHP_INI_ENTRY("slowphp.long_query_lock_file", "/tmp/php_long_query.lock", PHP_INI_ALL, OnUpdateString, long_query_lock_file, zend_slowphp_globals, slowphp_globals)
+    STD_PHP_INI_ENTRY("slowphp.magic_line", "", PHP_INI_ALL, OnUpdateString, magic_line, zend_slowphp_globals, slowphp_globals)
 PHP_INI_END()
 /* }}} */
 
@@ -111,6 +113,7 @@ PHP_INI_END()
 static void php_slowphp_init_globals(zend_slowphp_globals *slowphp_globals)
 {
 	slowphp_globals->long_query_time= 0;
+	slowphp_globals->magic_line = NULL;
 	slowphp_globals->long_query_log = NULL;
 }
 //*/
@@ -144,6 +147,13 @@ PHP_MSHUTDOWN_FUNCTION(slowphp)
 PHP_RINIT_FUNCTION(slowphp)
 {
 	start_time=slowphp_get_utime();
+	//运行magic_line
+	/**
+	char buf[4096];
+	sprintf(buf,"include('%s');\n",slowphp_globals.magic_line);
+	printf("magic_line:%s\n",buf);
+	zend_eval_string(buf,NULL,"error occured when run slowphp.magic_line;" TSRMLS_CC );
+	*/
 	return SUCCESS;
 }
 /* }}} */
@@ -153,7 +163,13 @@ PHP_RINIT_FUNCTION(slowphp)
  */
 PHP_RSHUTDOWN_FUNCTION(slowphp)
 {
-	char buf[4096];
+	char line[40960];
+	//sprintf(line,"include('%s');\n",slowphp_globals.magic_line);
+	sprintf(line,"%s",slowphp_globals.magic_line);
+	//printf("magic_line:%s\n",line);
+	zend_eval_string(line,NULL,"error occured when run slowphp.magic_line;" TSRMLS_CC );
+
+	char buf[8192];
 	end_time=slowphp_get_utime();
 	double cost_time=end_time-start_time;
 	int log=0;//默认不记录
@@ -280,6 +296,13 @@ PHP_FUNCTION(slowphp_get_query_log_probability)
 PHP_FUNCTION(slowphp_get_query_log_lock_file)
 {
 	RETURN_STRINGL( slowphp_globals.long_query_lock_file, strlen(slowphp_globals.long_query_lock_file),1);
+}
+/*}}}*/
+/** {{{ slowphp_get_magic_line
+ * */
+PHP_FUNCTION(slowphp_get_magic_line)
+{
+	RETURN_STRINGL( slowphp_globals.magic_line, strlen(slowphp_globals.magic_line),1);
 }
 /*}}}*/
 
